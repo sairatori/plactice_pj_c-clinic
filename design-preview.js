@@ -1,4 +1,4 @@
-/* Prototype interactions only. No opening overlay or scroll-driven decoration. */
+/* Menu, anchor focus and placeholder feedback. Motion is independent. */
 (() => {
   const root = document.documentElement;
   const toggle = document.querySelector('.menu-toggle');
