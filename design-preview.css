@@ -25,12 +25,12 @@
   --panel-inset: var(--s-4);
   --radius: 24px;
   --header-size: 88px;
-  --motion-feedback: 300ms;
-  --motion-enter: 400ms;
+  --motion-feedback: 600ms;
+  --motion-enter: 1100ms;
   --motion-float: 7000ms;
   --float-distance: -20px;
   --ease-standard: cubic-bezier(.2, 0, .3, 1);
-  --ease-enter: cubic-bezier(0, 0, .3, 1);
+  --ease-enter: cubic-bezier(.22, 1, .36, 1);
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-size) + var(--s-3)); }
@@ -65,14 +65,14 @@ a, button { -webkit-tap-highlight-color: transparent; }
 }
 .button::before, .pill::before {
   content: ""; position: absolute; z-index: -1; inset: -1px;
-  background: #d4e899; clip-path: circle(0% at 50% 100%);
+  background: #d4e899; clip-path: circle(0% at 100% 50%);
   transition: clip-path var(--motion-feedback) var(--ease-standard); pointer-events: none;
 }
 .button--primary, .pill--green { background: var(--lime); }
 .button--outline { background: white; border-color: var(--line); }
 .button > span, .button-arrow { display: inline-block; transition: transform var(--motion-feedback) var(--ease-standard); }
 .button span { font-size: 18px; }
-.button:focus-visible::before, .pill:focus-visible::before { clip-path: circle(115% at 50% 100%); }
+.button:focus-visible::before, .pill:focus-visible::before { clip-path: circle(115% at 100% 50%); }
 .button:focus-visible > span, .pill:focus-visible .button-arrow { transform: translateX(4px); }
 .text-link { display: inline-flex; justify-content: space-between; align-items: center; gap: var(--s-3); min-height: 44px; font-size: 14px; font-weight: 700; color: var(--green); }
 .text-link, .main-nav a, .footer-top nav a, .footer-bottom a, .news-list a > span {
@@ -81,12 +81,12 @@ a, button { -webkit-tap-highlight-color: transparent; }
 }
 .text-link:focus-visible, .main-nav a:focus-visible, .footer-top nav a:focus-visible, .footer-bottom a:focus-visible, .news-list a:focus-visible > span { text-decoration-color: currentColor; }
 @media (hover: hover) and (pointer: fine) {
-  .button:hover::before, .pill:hover::before { clip-path: circle(115% at 50% 100%); }
+  .button:hover::before, .pill:hover::before { clip-path: circle(115% at 100% 50%); }
   .button:hover, .pill:hover { border-color: #adca64; }
   .button:hover > span, .pill:hover .button-arrow { transform: translateX(4px); }
   .text-link:hover, .main-nav a:hover, .footer-top nav a:hover, .footer-bottom a:hover, .news-list a:hover > span { text-decoration-color: currentColor; color: var(--green); }
 }
-.button:active::before, .pill:active::before { clip-path: circle(115% at 50% 100%); }
+.button:active::before, .pill:active::before { clip-path: circle(115% at 100% 50%); }
 
 /* Stable header; its left edge shares the main content grid. */
 .site-header { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--line); }
@@ -112,10 +112,15 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @keyframes hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(var(--float-distance)); } }
 /* The opening covers only the non-interactive photograph, never booking or copy.
    A CSS completion guard also removes it if JS stops after inserting the layer. */
-.hero-opening { position: absolute; z-index: 1; inset: 0; display: grid; place-items: center; background: var(--paper); pointer-events: none; animation: opening-unveil 480ms var(--ease-standard) 720ms both, opening-rescue 1ms linear 1500ms forwards; }
-.hero-opening img { width: min(76%, 440px); height: auto; animation: opening-logo 400ms var(--ease-enter) both; }
-@keyframes opening-logo { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
-@keyframes opening-unveil { from { opacity: 1; } to { opacity: 0; } }
+.hero-opening { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; background: #f6f9f0; pointer-events: none; animation: opening-unveil 800ms ease 1000ms both, opening-rescue 1ms linear 2900ms forwards; }
+.opening-scene { position: relative; display: grid; place-items: center; width: min(680px, 88vw); height: min(440px, 65vh); isolation: isolate; }
+.opening-scene img { width: min(480px, 78vw); height: auto; position: relative; }
+.opening-shape { position: absolute; z-index: -1; border-radius: 62% 38% 58% 42% / 46% 54% 46% 54%; animation: opening-float 2400ms ease-in-out infinite alternate; }
+.opening-shape--one { width: 46%; height: 62%; left: 3%; top: 6%; background: linear-gradient(140deg, #d6e978b3, #d6e97833); rotate: -24deg; }
+.opening-shape--two { width: 25%; height: 37%; right: 6%; bottom: 7%; background: linear-gradient(140deg, #b5d50099, #d6e97866); rotate: 22deg; animation-delay: -800ms; }
+.opening-shape--three { width: 12%; height: 16%; right: 20%; top: 14%; background: linear-gradient(130deg, #f2db00b3, #fcf2d0); rotate: -30deg; animation-delay: -1400ms; }
+@keyframes opening-float { from { translate: 0 6px; } to { translate: 0 -12px; } }
+@keyframes opening-unveil { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
 @keyframes opening-rescue { to { visibility: hidden; } }
 
 /* Four / eight columns within a 32px inset panel. */
@@ -211,7 +216,7 @@ td { color: var(--green); }
 .preview-toast.is-visible { display: block; }
 
 /* Offscreen elements are armed once; WAAPI owns the entrance, not transitions. */
-.reveal-pending { opacity: 0; transform: translateY(12px); }
+.reveal-pending { opacity: 0; transform: translateY(6px); }
 @media (max-width: 1199px) {
   :root { --page-inset: var(--s-4); }
   .header-inner { gap: var(--s-2); }

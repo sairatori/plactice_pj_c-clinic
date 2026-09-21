@@ -5,6 +5,7 @@
   if (!canvas) return;
   const pending = new Set();
   const running = new Map();
+  const introAnimations = new Map();
   let observer;
   let floatObserver;
   let opening;
@@ -13,14 +14,16 @@
   let photoInView = false;
   let printing = false;
   const css = getComputedStyle(document.documentElement);
-  const entranceMs = parseFloat(css.getPropertyValue('--motion-enter')) || 400;
-  const entranceEase = css.getPropertyValue('--ease-enter').trim() || 'cubic-bezier(0,0,.3,1)';
+  const entranceMs = parseFloat(css.getPropertyValue('--motion-enter')) || 1100;
+  const entranceEase = css.getPropertyValue('--ease-enter').trim() || 'cubic-bezier(.22,1,.36,1)';
 
   function updateFloat() {
     canvas.classList.toggle('is-floating', photoInView && openingFinished && !document.hidden && !reduced.matches && !printing);
   }
   function finishOpening() {
     clearTimeout(openingTimer);
+    introAnimations.forEach(animation => animation.cancel());
+    introAnimations.clear();
     opening?.remove();
     opening = null;
     openingFinished = true;
@@ -44,7 +47,7 @@
     try {
       // Create the animation before removing the pending state: no visible-then-hidden frame.
       const animation = element.animate(
-        [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'translateY(0)' }],
         { duration: entranceMs, delay, easing: entranceEase, fill: 'both' }
       );
       running.set(element, animation);
@@ -72,13 +75,22 @@
       opening = document.createElement('div');
       opening.className = 'hero-opening';
       opening.setAttribute('aria-hidden', 'true');
-      opening.innerHTML = '<img src="IMG/ロゴ_たなか子どもクリニック.svg" alt="" width="542" height="47">';
-      // Set cleanup before insertion. No pointer, wheel or keyboard event cancels the opening.
-      openingTimer = setTimeout(finishOpening, 1250);
-      opening.addEventListener('animationend', event => {
-        if (event.target === opening && event.animationName === 'opening-unveil') finishOpening();
-      });
-      canvas.append(opening);
+      opening.innerHTML = '<div class="opening-scene"><span class="opening-shape opening-shape--one"></span><span class="opening-shape opening-shape--two"></span><span class="opening-shape opening-shape--three"></span><img src="IMG/ロゴ_たなか子どもクリニック.svg" alt="" width="542" height="47"></div>';
+      // Fixed, bounded timeline. Input never dismisses the opening.
+      openingTimer = setTimeout(finishOpening, 2900);
+      document.body.append(opening);
+      if (Element.prototype.animate) {
+        const intro = [canvas, ...document.querySelectorAll('.hero-copy > *')];
+        intro.forEach((element, index) => {
+          const animation = element.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: index === 0 ? 1600 : 1100,
+            delay: 1000 + index * 160,
+            easing: entranceEase, fill: 'backwards'
+          });
+          introAnimations.set(element, animation);
+          animation.onfinish = () => introAnimations.delete(element);
+        });
+      }
     }
     if ('IntersectionObserver' in window) {
       floatObserver = new IntersectionObserver(entries => {
@@ -95,7 +107,7 @@
         let rowTop = -Infinity, rowIndex = 0;
         visible.forEach(entry => {
           if (Math.abs(entry.boundingClientRect.top - rowTop) > 8) { rowTop = entry.boundingClientRect.top; rowIndex = 0; }
-          enter(entry.target, Math.min(rowIndex++, 2) * 60);
+          enter(entry.target, Math.min(rowIndex++, 2) * 160);
         });
       }, { threshold: 0.08 });
       const destination = document.getElementById(location.hash.slice(1));
@@ -128,7 +140,7 @@
     });
     window.addEventListener('beforeprint', () => { printing = true; finishOpening(); showAll(); });
     window.addEventListener('afterprint', () => { printing = false; updateFloat(); });
-    window.addEventListener('error', showAll);
+    window.addEventListener('error', () => { finishOpening(); showAll(); });
   } catch {
     finishOpening(); showAll(); floatObserver?.disconnect();
     canvas.classList.remove('is-floating');
