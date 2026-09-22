@@ -23,7 +23,7 @@ function environment(opts={}){
   media.matches=!!opts.reduce;doc.hidden=!!opts.hidden;doc.documentElement=new Element();doc.body=new Element();
   const canvas=new Element(100),above=new Element(200),cards=[new Element(1200,0),new Element(1200,400),new Element(1200,800)];
   const section=new Element(1100);cards.forEach(c=>section.append(c));
-  doc.querySelector=()=>canvas;doc.querySelectorAll=selector=>selector==='.hero-copy > *'?Array.from({length:4},()=>new Element(100)):[above,...cards];doc.createElement=()=>new Element();doc.getElementById=id=>id==='services'?section:null;
+  doc.querySelector=()=>canvas;doc.querySelectorAll=selector=>selector==='.hero-copy > *'?Array.from({length:3},()=>new Element(100)):[above,...cards];doc.createElement=()=>new Element();doc.body.append(canvas);doc.body.append(above);doc.body.append(section);doc.getElementById=id=>id==='top'?doc.body:id==='services'?section:null;
   class Observer {
     constructor(callback){this.callback=callback;this.targets=new Set();observers.push(this)}
     observe(el){this.targets.add(el)} unobserve(el){this.targets.delete(el)} disconnect(){this.targets.clear()}
@@ -35,7 +35,7 @@ function environment(opts={}){
   function advance(ms){now+=ms;for(const [id,t]of [...timers])if(t.at<=now){timers.delete(id);t.fn()}}
   return {doc,win,media,canvas,above,cards,section,observers,animations,advance,opening:()=>doc.body.children.find(e=>e.className==='hero-opening'&&!e.removed)};
 }
-let e=environment();assert(e.opening());assert.deepEqual(e.animations.map(a=>a.options.duration),[1600,1100,1100,1100,1100]);assert.deepEqual(e.animations.map(a=>a.options.delay),[1000,1160,1320,1480,1640]);assert(!e.above.classList.contains('reveal-pending'));
+let e=environment();assert(e.opening());assert.deepEqual(e.animations.map(a=>a.options.duration),[1600,1100,1100,1100]);assert.deepEqual(e.animations.map(a=>a.options.delay),[1000,1160,1320,1480]);assert(!e.above.classList.contains('reveal-pending'));
 e.observers[0].trigger([e.canvas]);assert(!e.canvas.classList.contains('is-floating'),'floating waits for the opening');
 for(const event of ['pointerdown','touchstart','wheel','scroll','keydown'])e.win.emit(event);
 e.doc.emit('click',{target:{closest:()=>null}});
@@ -57,4 +57,5 @@ e=environment();e.doc.hidden=true;e.doc.emit('visibilitychange');assert(!e.openi
 e=environment({animationError:true,painted:true});e.observers[1].trigger(e.cards);assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));
 e=environment({noObserver:true});e.advance(2900);assert(!e.opening());assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));
 e=environment({animationError:true});assert(!e.opening());
+e=environment({hash:'#top'});assert(e.cards.every(c=>c.classList.contains('reveal-pending')),'top URL must retain offscreen entrances');e.animations.length=0;e.observers[1].trigger([e.cards[0]]);assert.equal(e.animations.length,1);e.doc.emit('click',{target:{closest:()=>({hash:'#top'})}});assert(e.cards[1].classList.contains('reveal-pending'),'top link must not disable unseen content');
 console.log('PASS: timed opening, input non-cancellation, deep links, one-shot entrances, staggering, focus, reduced motion, visibility, print, failures and no-observer fallback.');

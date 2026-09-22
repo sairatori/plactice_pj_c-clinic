@@ -17,6 +17,8 @@
   const entranceMs = parseFloat(css.getPropertyValue('--motion-enter')) || 1100;
   const entranceEase = css.getPropertyValue('--ease-enter').trim() || 'cubic-bezier(.22,1,.36,1)';
 
+  const revealEase = css.getPropertyValue('--ease-reveal').trim() || 'cubic-bezier(.25,.1,.25,1)';
+
   function updateFloat() {
     canvas.classList.toggle('is-floating', photoInView && openingFinished && !document.hidden && !reduced.matches && !printing);
   }
@@ -47,8 +49,8 @@
     try {
       // Create the animation before removing the pending state: no visible-then-hidden frame.
       const animation = element.animate(
-        [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'translateY(0)' }],
-        { duration: entranceMs, delay, easing: entranceEase, fill: 'both' }
+        [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: entranceMs, delay, easing: revealEase, fill: 'both' }
       );
       running.set(element, animation);
       element.classList.remove('reveal-pending');
@@ -60,7 +62,7 @@
     const anchor = event.target.closest('a[href^="#"]');
     const id = anchor?.hash.slice(1);
     const target = id ? document.getElementById(id) : null;
-    if (!target) return;
+    if (!target || id === 'top') return;
     [...pending, ...running.keys()].forEach(element => {
       if (element.contains(target) || target.contains(element)) show(element);
     });
@@ -110,8 +112,9 @@
           enter(entry.target, Math.min(rowIndex++, 2) * 160);
         });
       }, { threshold: 0.08 });
-      const destination = document.getElementById(location.hash.slice(1));
-      const elements = document.querySelectorAll('.news .section-heading, .news-list, .services .section-heading, .service-card, .about > .container > .section-heading, .feature, .initiatives, .director, .access .section-heading, .access-layout');
+      // #top points at body: treating it as a section would skip every entrance.
+      const destination = location.hash === '#top' ? null : document.getElementById(location.hash.slice(1));
+      const elements = document.querySelectorAll('.visit, .symptoms, .news .section-heading, .news-list, .services .section-heading, .service-card, .about > .container > .section-heading, .feature, .initiatives, .director, .access .section-heading, .access-layout');
       elements.forEach(element => {
         // Above-fold and deep-link content never flashes or waits for the observer.
         if (element.getBoundingClientRect().top <= innerHeight || (destination && (destination.contains(element) || element.contains(destination)))) return;
