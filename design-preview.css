@@ -205,12 +205,10 @@ td { color: var(--green); }
 .services .section-intro, .about .section-intro { color: #90958e; }
 .access-parking { margin-top: var(--s-2); font-size: 14px; }
 .access-booking { display: flex; width: fit-content; max-width: 100%; margin: var(--s-3) auto 0 0; font-size: 14px; min-height: 44px; padding: 10px 20px; }
-.button-arrow { width: 20px; height: 20px; }
+.button-arrow { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 20px; width: 20px; height: 20px; line-height: 0; }
 .button-arrow svg { display: block; width: 100%; height: 100%; }
 
-.access { position: relative; isolation: isolate; overflow: hidden; background: #BAD24A; padding-block: var(--s-11); }
-.access::before { content: ""; position: absolute; z-index: -1; inset: 0; background: url("IMG/当院について_写真02.webp") center / cover no-repeat; filter: blur(64px); opacity: .6; transform: scale(1.25); pointer-events: none; }
-.access-booking .button-arrow { width: auto; font-size: 18px; font-weight: 400; }
+.access { background: var(--white); padding-block: var(--s-11); }
 .access-map { overflow: hidden; height: 264px; border-radius: 20px; background: var(--paper); }
 .access-map iframe { display: block; width: 100%; height: 100%; border: 0; }
 @media (min-width: 600px) and (max-width: 959px) { .access-map { height: 256px; } }
@@ -397,7 +395,6 @@ td { color: var(--green); }
 .director-message .director-lead { font-size: 24px; font-weight: 700; line-height: 1.5; color: var(--ink); margin-bottom: var(--s-2); }
 .director-message .director-body { font-size: 14px; line-height: 1.85; }
 .director-cta { align-self: center; font-size: 14px; min-height: 44px; padding: 10px 24px; }
-.director-cta .button-arrow { font-size: 18px; width: auto; }
 @media (min-width: 600px) and (max-width: 959px) {
   .director { grid-template-columns: minmax(160px, 1fr) minmax(0, 2fr); gap: var(--s-4); padding: var(--s-4); }
   .director-message .director-lead { font-size: 20px; }
