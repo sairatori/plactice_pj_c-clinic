@@ -13,7 +13,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;500;700;800&family=Roboto:wght@400;500;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="design-preview.css?v=20260926-adjustments-1">
+  <link rel="stylesheet" href="design-preview.css?v=20260927-feedback-2">
   <script src="design-motion.js?v=20260924-feedback-2" defer></script>
   <script src="design-preview.js?v=20260924-feedback-2" defer></script>
 </head>
@@ -52,7 +52,7 @@
           alt="FV_Thumb-A(Front).webp">
       </div>
     </section>
-    <section class="visit container layout-grid" aria-labelledby="visit-title">
+    <section class="visit container layout-grid" id="visit" aria-labelledby="visit-title">
       <div class="visit-heading">
         <p class="kicker">ご来院の方へ</p>
         <h2 id="visit-title">ご予約・診療時間</h2>
@@ -127,7 +127,7 @@
       <div class="container">
         <div class="section-heading layout-grid">
           <h2 id="services-title">診療案内</h2>
-          <p class="section-intro">お子さまのいつもと違う、から<br>日々の予防まで。</p>
+          <p class="section-intro">お子様のいつも通りから、いつもと違うことまで対応します</p>
         </div>
         <div class="service-grid layout-grid">
           <article class="service-card"><img src="IMG/診療案内_写真01.webp?v=20260922-photo-2" alt="診療案内_写真01.webp"
@@ -186,7 +186,7 @@
       <div class="container">
         <div class="section-heading layout-grid">
           <h2 id="about-title">当院について</h2>
-          <p class="section-intro">安心して通える場所であるために、<br>当院が取り組んでいることをご紹介します。</p>
+          <p class="section-intro">安心して通える場所であるために、当院が取り組んでいること</p>
         </div>
         <div class="features">
           <article class="feature feature--1 layout-grid"><img src="IMG/当院について_写真01.webp" alt="当院について_写真01.webp"
@@ -228,21 +228,19 @@
           </div>
         </section>
         <div class="director layout-grid" id="director">
-          <div class="director-profile"><img src="IMG/当院について_院長.webp" alt="当院について_院長.webp" class="director-photo"
-              width="1080" height="1053" loading="lazy" decoding="async">
+          <div class="director-profile"><img src="IMG/当院について_院長2.webp" alt="当院について_院長2.webp" class="director-photo"
+              width="1080" height="720" loading="lazy" decoding="async">
             <div class="director-details">
-              <p class="director-caption">たなか子どもクリニック 院長</p>
               <h3>田中 あおい</h3>
-              <p class="director-specialty">医学専門医</p>
+              <p class="director-caption">たなか子どもクリニック 院長</p>
             </div>
           </div>
           <div class="director-content">
-            <div class="director-message"><p>先生として、<br>支えるひとりとしてできることを。</p></div>
-            <a href="#" class="pill pill--green director-cta" data-placeholder>院長からのご挨拶<span
-              class="button-arrow" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg></span></a>
+            <div class="director-message">
+              <p class="director-lead">お子さまの小さな変化を、<br>ご家族と一緒に見つめていく。</p>
+              <p class="director-body">診察では、症状だけでなく、ご家庭での様子や気がかりにも耳を傾けます。病気のことも、日々の成長のことも、気負わず相談できる身近な存在を目指しています。</p>
+            </div>
+            <a href="#" class="pill button--outline director-cta" data-placeholder>院長からのご挨拶<span class="button-arrow" aria-hidden="true">⟶</span></a>
           </div>
         </div>
       </div>
@@ -254,13 +252,15 @@
         </div>
         <div class="access-layout layout-grid">
           <div class="access-location">
-            <div class="map-placeholder" role="img" aria-label="地図の仮表示。MAP埋め込み予定エリア"><span class="map-pin"
-                aria-hidden="true"></span><span class="map-label"><strong>MAP</strong><span>地図埋め込みエリア</span></span>
+            <div class="access-map">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.7479757770916!2d139.74285797578673!3d35.658580472594515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188bbd9009ec09%3A0x481a93f0d2a409dd!2z5p2x5Lqs44K_44Ov44O8!5e0!3m2!1sja!2sjp!4v1790518917104!5m2!1sja!2sjp" title="アクセスマップ（東京タワー）" width="600" height="450" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
             </div>
           </div>
           <div class="access-directions">
             <h3>所在地・交通アクセス</h3>
             <address>〒150-0000 東京都渋谷区神宮前0丁目0-0<br>渋谷駅南口より徒歩0分<br>丸ノ内線</address>
+            <p class="access-parking">駐車場00台駐車可能</p>
+            <a href="#visit" class="pill pill--green access-booking">ご予約はこちらから<span class="button-arrow" aria-hidden="true">↑</span></a>
           </div>
         </div>
       </div>
@@ -271,11 +271,10 @@
       <div class="footer-top"><a class="brand" href="#top" aria-label="たなか子どもクリニック トップへ"><img
             src="IMG/ロゴ_たなか子どもクリニック.svg" alt="ロゴ_たなか子どもクリニック.svg" width="542" height="47" loading="lazy"></a>
         <nav aria-label="フッターナビゲーション"><a href="#services">診療案内</a><a href="#about">当院について</a><a
-            href="#access">アクセス</a><a href="#top">ページの先頭へ ↑</a></nav>
+            href="#access">アクセス</a></nav>
       </div>
       <div class="footer-bottom">
-        <div><a href="#" data-placeholder>プライバシーポリシー</a><a href="#" data-placeholder>利用規約</a><a
-            href="legacy/">旧デザインを見る</a></div><small>© 2026 たなかこどもクリニック</small>
+        <div><a href="#" data-placeholder>プライバシーポリシー</a><a href="#" data-placeholder>利用規約</a></div><small>© 2026 たなかこどもクリニック</small>
       </div>
     </div>
   </footer>
