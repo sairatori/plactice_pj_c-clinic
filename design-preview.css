@@ -253,9 +253,9 @@ td { color: var(--green); }
   .hero h1 span { font-size: clamp(15px, 2.3vw, 21px); }
   .hero-canvas { height: clamp(256px, 40vw, 376px); border-radius: 80px 24px 80px 24px; }
   .hero-description { font-size: 14px; }
-  .visit-actions { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--gutter); }
-  .visit-actions .booking-row {grid-column: 1;width: 100%;flex-direction: row;}
-  .visit-phone {grid-column: 1;align-self: center;}
+  .visit-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-3) var(--s-4); align-items: center; }
+  .visit-actions .booking-row { grid-column: 1; width: 100%; flex-direction: column; gap: var(--s-2); }
+  .visit-phone { grid-column: 2; grid-row: 1; align-self: center; }
   .visit-actions .phone-label { margin-top: 0; }
   .visit h2 { font-size: 22px; }
   .service-card { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--gutter); align-items: center; }
@@ -326,8 +326,10 @@ td { color: var(--green); }
   .hero-canvas { height: auto; aspect-ratio: 1.3; border-radius: 64px 20px 64px 20px; }
   .hero-layer { object-position: 54% center; }
   .visit { row-gap: var(--s-3); }
+  .visit-actions { display: grid; gap: var(--s-3); }
+  .visit-actions .phone-label { margin-top: 0; }
   .visit h2 { font-size: 23px; }
-  .visit .booking-row { flex-direction: column; gap: var(--s-1); }
+  .visit .booking-row { flex-direction: column; gap: var(--s-2); }
   .booking-row .button { min-height: 48px; font-size: 13px; padding-inline: var(--s-1); }
   .phone { font-size: 26px; }
   .schedule table, .schedule thead th { font-size: 12px; }
@@ -400,11 +402,26 @@ td { color: var(--green); }
   .director-message .director-lead { font-size: 20px; }
 }
 @media (max-width: 599px) {
-  .director { grid-template-columns: minmax(0, 1fr); gap: var(--s-3); padding: var(--s-3); margin-top: var(--content-gap); }
+  .director { width: min(100%, 420px); grid-template-columns: minmax(0, 1fr); gap: var(--s-4); padding: var(--s-3); margin-top: var(--content-gap); }
   .director-profile { width: min(100%, 240px); justify-self: center; }
   .director-message .director-lead { font-size: 18px; }
   .director-content { gap: var(--s-3); }
   .director-cta { max-width: 100%; }
+}
+
+/* Mid-size headings follow their text width instead of empty grid columns. */
+@media (min-width: 801px) and (max-width: 959px) {
+  .section-heading.layout-grid { display: flex; align-items: center; gap: var(--s-3); }
+  .section-heading.layout-grid h2 { flex: 0 0 auto; margin: 0; }
+  .section-heading.layout-grid .section-intro { align-self: center; margin: 0; }
+}
+@media (max-width: 800px) {
+  .section-heading.layout-grid { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); }
+  .section-heading.layout-grid h2 { margin: 0; }
+  .section-heading.layout-grid .section-intro { align-self: auto; margin: 0; }
+}
+@media (max-width: 599px) {
+  .access-booking { margin-inline: auto; }
 }
 
 /* PC: compact heading groups and a centered, readable director introduction. */
