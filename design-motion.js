@@ -5,12 +5,14 @@
   if (!canvas) return;
   const pending = new Set();
   const running = new Map();
+  const introAnimations = new Map();
   let observer;
   let floatObserver;
   let photoInView = false;
   let printing = false;
   const css = getComputedStyle(document.documentElement);
   const entranceMs = parseFloat(css.getPropertyValue('--motion-enter')) || 1100;
+  const entranceEase = css.getPropertyValue('--ease-enter').trim() || 'cubic-bezier(.22,1,.36,1)';
 
   const revealEase = css.getPropertyValue('--ease-reveal').trim() || 'cubic-bezier(.25,.1,.25,1)';
 
@@ -26,6 +28,8 @@
     animation?.cancel();
   }
   function showAll() {
+    introAnimations.forEach(animation => animation.cancel());
+    introAnimations.clear();
     [...pending, ...running.keys()].forEach(show);
     observer?.disconnect();
   }
@@ -54,6 +58,23 @@
     });
   }
   try {
+    const navigation = performance.getEntriesByType('navigation')[0];
+    const atTop = (!location.hash || location.hash === '#top') && scrollY === 0;
+    const alreadyPainted = performance.getEntriesByType('paint').some(entry => entry.name === 'first-contentful-paint');
+    if (!alreadyPainted && !reduced.matches && !document.hidden && atTop && navigation?.type !== 'back_forward' && Element.prototype.animate) {
+      // Keep the FV entrance, starting immediately without the former logo overlay.
+      [canvas, ...document.querySelectorAll('.hero-copy > *')].forEach((element, index) => {
+        try {
+          const animation = element.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: index === 0 ? 1600 : 1100,
+            delay: index * 160,
+            easing: entranceEase, fill: 'backwards'
+          });
+          introAnimations.set(element, animation);
+          animation.onfinish = () => introAnimations.delete(element);
+        } catch { /* Keep the element visible if animation is unavailable. */ }
+      });
+    }
     if ('IntersectionObserver' in window) {
       floatObserver = new IntersectionObserver(entries => {
         photoInView = entries[0].isIntersecting;
