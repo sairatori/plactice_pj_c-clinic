@@ -116,19 +116,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .hero-layer--effect { animation: hero-float var(--motion-float) ease-in-out infinite; animation-play-state: paused; }
 .hero-canvas.is-floating .hero-layer--effect { animation-play-state: running; }
 @keyframes hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(var(--float-distance)); } }
-/* The fullscreen opening follows the legacy logo and shape sequence.
-   A CSS completion guard also removes it if JS stops after inserting the layer. */
-.hero-opening { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; background: #f6f9f0; pointer-events: none; animation: opening-unveil 800ms ease 1000ms both, opening-rescue 1ms linear 2900ms forwards; }
-.opening-scene { position: relative; display: grid; place-items: center; width: min(680px, 88vw); height: min(440px, 65vh); isolation: isolate; }
-.opening-scene img { width: min(480px, 78vw); height: auto; position: relative; }
-.opening-shape { position: absolute; z-index: -1; border-radius: 62% 38% 58% 42% / 46% 54% 46% 54%; animation: opening-float 2400ms ease-in-out infinite alternate; }
-.opening-shape--one { width: 46%; height: 62%; left: 3%; top: 6%; background: linear-gradient(140deg, #d6e978b3, #d6e97833); rotate: -24deg; }
-.opening-shape--two { width: 25%; height: 37%; right: 6%; bottom: 7%; background: linear-gradient(140deg, #b5d50099, #d6e97866); rotate: 22deg; animation-delay: -800ms; }
-.opening-shape--three { width: 12%; height: 16%; right: 20%; top: 14%; background: linear-gradient(130deg, #f2db00b3, #fcf2d0); rotate: -30deg; animation-delay: -1400ms; }
-@keyframes opening-float { from { translate: 0 6px; } to { translate: 0 -12px; } }
-@keyframes opening-unveil { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
-@keyframes opening-rescue { to { visibility: hidden; } }
-
 /* Full-width heading, then four / eight columns of booking and schedule. */
 .visit { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: var(--panel-inset); }
 .visit-heading { grid-column: 1 / -1; }
@@ -440,12 +427,11 @@ td { color: var(--green); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
-  .hero-opening { display: none; }
   .reveal-pending { opacity: 1; transform: none; }
 }
 @media print {
   .site-header { position: static; }
-  .main-nav, .menu-toggle, .preview-toast, .hero-opening { display: none !important; }
+  .main-nav, .menu-toggle, .preview-toast { display: none !important; }
   .section { padding-block: var(--s-4); }
   .hero-canvas { height: 304px; }
   .hero-layer--effect { animation: none !important; }

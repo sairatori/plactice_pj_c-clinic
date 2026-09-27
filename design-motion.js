@@ -5,31 +5,17 @@
   if (!canvas) return;
   const pending = new Set();
   const running = new Map();
-  const introAnimations = new Map();
   let observer;
   let floatObserver;
-  let opening;
-  let openingTimer;
-  let openingFinished = true;
   let photoInView = false;
   let printing = false;
   const css = getComputedStyle(document.documentElement);
   const entranceMs = parseFloat(css.getPropertyValue('--motion-enter')) || 1100;
-  const entranceEase = css.getPropertyValue('--ease-enter').trim() || 'cubic-bezier(.22,1,.36,1)';
 
   const revealEase = css.getPropertyValue('--ease-reveal').trim() || 'cubic-bezier(.25,.1,.25,1)';
 
   function updateFloat() {
-    canvas.classList.toggle('is-floating', photoInView && openingFinished && !document.hidden && !reduced.matches && !printing);
-  }
-  function finishOpening() {
-    clearTimeout(openingTimer);
-    introAnimations.forEach(animation => animation.cancel());
-    introAnimations.clear();
-    opening?.remove();
-    opening = null;
-    openingFinished = true;
-    updateFloat();
+    canvas.classList.toggle('is-floating', photoInView && !document.hidden && !reduced.matches && !printing);
   }
   function show(element) {
     pending.delete(element);
@@ -68,32 +54,6 @@
     });
   }
   try {
-    const navigation = performance.getEntriesByType('navigation')[0];
-    const atTop = (!location.hash || location.hash === '#top') && scrollY === 0;
-    // A delayed script must not cover a photograph that has already been painted.
-    const alreadyPainted = performance.getEntriesByType('paint').some(entry => entry.name === 'first-contentful-paint');
-    if (!alreadyPainted && !reduced.matches && !document.hidden && atTop && navigation?.type !== 'back_forward') {
-      openingFinished = false;
-      opening = document.createElement('div');
-      opening.className = 'hero-opening';
-      opening.setAttribute('aria-hidden', 'true');
-      opening.innerHTML = '<div class="opening-scene"><span class="opening-shape opening-shape--one"></span><span class="opening-shape opening-shape--two"></span><span class="opening-shape opening-shape--three"></span><img src="IMG/ロゴ_たなか子どもクリニック.svg" alt="" width="542" height="47"></div>';
-      // Fixed, bounded timeline. Input never dismisses the opening.
-      openingTimer = setTimeout(finishOpening, 2900);
-      document.body.append(opening);
-      if (Element.prototype.animate) {
-        const intro = [canvas, ...document.querySelectorAll('.hero-copy > *')];
-        intro.forEach((element, index) => {
-          const animation = element.animate([{ opacity: 0 }, { opacity: 1 }], {
-            duration: index === 0 ? 1600 : 1100,
-            delay: 1000 + index * 160,
-            easing: entranceEase, fill: 'backwards'
-          });
-          introAnimations.set(element, animation);
-          animation.onfinish = () => introAnimations.delete(element);
-        });
-      }
-    }
     if ('IntersectionObserver' in window) {
       floatObserver = new IntersectionObserver(entries => {
         photoInView = entries[0].isIntersecting;
@@ -128,24 +88,24 @@
       [...pending, ...running.keys()].forEach(element => { if (element.contains(event.target)) show(element); });
     });
     reduced.addEventListener('change', () => {
-      if (reduced.matches) { finishOpening(); showAll(); }
+      if (reduced.matches) showAll();
       updateFloat();
     });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { finishOpening(); showAll(); }
+      if (document.hidden) showAll();
       updateFloat();
     });
-    window.addEventListener('pagehide', () => { photoInView = false; finishOpening(); showAll(); });
+    window.addEventListener('pagehide', () => { photoInView = false; updateFloat(); showAll(); });
     window.addEventListener('pageshow', () => {
       const rect = canvas.getBoundingClientRect();
       photoInView = rect.bottom > 0 && rect.top < innerHeight;
       updateFloat();
     });
-    window.addEventListener('beforeprint', () => { printing = true; finishOpening(); showAll(); });
+    window.addEventListener('beforeprint', () => { printing = true; updateFloat(); showAll(); });
     window.addEventListener('afterprint', () => { printing = false; updateFloat(); });
-    window.addEventListener('error', () => { finishOpening(); showAll(); });
+    window.addEventListener('error', () => { updateFloat(); showAll(); });
   } catch {
-    finishOpening(); showAll(); floatObserver?.disconnect();
+    updateFloat(); showAll(); floatObserver?.disconnect();
     canvas.classList.remove('is-floating');
   }
 })();

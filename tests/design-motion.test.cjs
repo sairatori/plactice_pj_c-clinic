@@ -35,13 +35,8 @@ function environment(opts={}){
   function advance(ms){now+=ms;for(const [id,t]of [...timers])if(t.at<=now){timers.delete(id);t.fn()}}
   return {doc,win,media,canvas,above,cards,section,observers,animations,advance,opening:()=>doc.body.children.find(e=>e.className==='hero-opening'&&!e.removed)};
 }
-let e=environment();assert(e.opening());assert.deepEqual(e.animations.map(a=>a.options.duration),[1600,1100,1100,1100]);assert.deepEqual(e.animations.map(a=>a.options.delay),[1000,1160,1320,1480]);assert(!e.above.classList.contains('reveal-pending'));
-e.observers[0].trigger([e.canvas]);assert(!e.canvas.classList.contains('is-floating'),'floating waits for the opening');
-for(const event of ['pointerdown','touchstart','wheel','scroll','keydown'])e.win.emit(event);
-e.doc.emit('click',{target:{closest:()=>null}});
-e.doc.emit('focusin',{target:e.above});
-assert(e.opening(),'user input must not cancel the opening');
-e.advance(1000);assert(e.opening());e.advance(1900);assert(!e.opening(),'timer finishes even without CSS events or image decoding');assert(e.canvas.classList.contains('is-floating'));
+let e=environment();assert(!e.opening(),'initial load must not create an opening overlay');assert.equal(e.animations.length,0,'hero is visible without an introductory fade');assert(!e.above.classList.contains('reveal-pending'));
+e.observers[0].trigger([e.canvas]);assert(e.canvas.classList.contains('is-floating'),'floating starts as soon as the hero is visible');
 e.observers[0].trigger([e.canvas],false);assert(!e.canvas.classList.contains('is-floating'));
 e.observers[0].trigger([e.canvas]);assert(e.canvas.classList.contains('is-floating'));
 e.animations.length=0;e.observers[1].trigger(e.cards);assert.equal(e.animations.length,3);assert.deepEqual(e.animations.map(a=>a.options.delay),[0,160,320]);
@@ -49,7 +44,7 @@ for(const a of e.animations){assert.equal(a.options.duration,1100);a.onfinish();
 assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));e.observers[1].trigger(e.cards);assert.equal(e.animations.length,3,'entrances run once');
 for(const opts of [{reduce:true},{hidden:true},{hash:'#services'},{scroll:80},{navigation:'back_forward'},{painted:true}])assert(!environment(opts).opening());
 e=environment({hash:'#services'});assert(e.cards.every(c=>!c.classList.contains('reveal-pending')),'deep-link content is immediately visible');
-e=environment();e.doc.emit('click',{target:{closest:()=>({hash:'#services'})}});assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));assert(e.opening(),'anchor navigation does not cancel photo opening');
+e=environment();e.doc.emit('click',{target:{closest:()=>({hash:'#services'})}});assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));assert(!e.opening());
 e=environment();e.doc.emit('focusin',{target:e.cards[1]});assert(!e.cards[1].classList.contains('reveal-pending'));
 e=environment();e.media.matches=true;e.media.emit('change');assert(!e.opening());assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));assert(!e.canvas.classList.contains('is-floating'));
 for(const name of ['beforeprint','pagehide','error']){e=environment();e.win.emit(name);assert(e.cards.every(c=>!c.classList.contains('reveal-pending')),name)}
@@ -58,4 +53,4 @@ e=environment({animationError:true,painted:true});e.observers[1].trigger(e.cards
 e=environment({noObserver:true});e.advance(2900);assert(!e.opening());assert(e.cards.every(c=>!c.classList.contains('reveal-pending')));
 e=environment({animationError:true});assert(!e.opening());
 e=environment({hash:'#top'});assert(e.cards.every(c=>c.classList.contains('reveal-pending')),'top URL must retain offscreen entrances');e.animations.length=0;e.observers[1].trigger([e.cards[0]]);assert.equal(e.animations.length,1);e.doc.emit('click',{target:{closest:()=>({hash:'#top'})}});assert(e.cards[1].classList.contains('reveal-pending'),'top link must not disable unseen content');
-console.log('PASS: timed opening, input non-cancellation, deep links, one-shot entrances, staggering, focus, reduced motion, visibility, print, failures and no-observer fallback.');
+console.log('PASS: immediate hero with no opening, deep links, one-shot entrances, staggering, focus, reduced motion, visibility, print, failures and no-observer fallback.');
